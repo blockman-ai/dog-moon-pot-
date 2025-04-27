@@ -2,6 +2,8 @@ const api = { pot: '/pot', entries: '/entries', enter: '/enter', draw: '/draw' }
 
 let connectedWallet = null;
 const DOG_TOKEN_MINT = "dog1viwbb2vWDpER5FrJ4YFG6gq6XuyFohUe9TXN65u"; // Your real $DOG mint!
+const HELIUS_API_KEY = "512281c9-ff3c-4013-9781-ebf93007fc7e";
+
 
 document.addEventListener('DOMContentLoaded', () => {
   const potEl = document.getElementById('pot');
