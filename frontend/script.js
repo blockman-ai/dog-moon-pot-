@@ -24,43 +24,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ✅ Check if wallet holds DOG Token using Solana RPC
   const checkDogToken = async (publicKey) => {
-  try {
-    const url = 'https://api.mainnet-beta.solana.com';
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        jsonrpc: '2.0',
-        id: 1,
-        method: 'getTokenAccountsByOwner',
-        params: [
-          publicKey,
-          { programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' },
-          { encoding: 'jsonParsed' }
-        ]
-      })
-    });
+    try {
+      const url = 'https://api.mainnet-beta.solana.com';
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'getTokenAccountsByOwner',
+          params: [
+            publicKey,
+            { programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' },
+            { encoding: 'jsonParsed' }
+          ]
+        })
+      });
 
-    const data = await response.json();
-    const tokens = data.result.value;
+      const data = await response.json();
+      const tokens = data.result.value;
 
-    const holdsDOG = tokens.some(token => {
-      const info = token.account.data.parsed.info;
-      return (
-        info.mint === DOG_TOKEN_MINT &&
-        info.tokenAmount &&
-        Number(info.tokenAmount.amount) > 0
-      );
-    });
+      const holdsDOG = tokens.some(token => {
+        const info = token.account.data.parsed.info;
+        console.log('TOKEN INFO:', info); // Debugging output
+        return (
+          info.mint === DOG_TOKEN_MINT &&
+          info.tokenAmount &&
+          Number(info.tokenAmount.amount) > 0
+        );
+      });
 
-    return holdsDOG;
-  } catch (error) {
-    console.error('Error checking DOG token with Solana RPC:', error);
-    return false;
-  }
-};
-  
-  // Connect Phantom Wallet
+      return holdsDOG;
+    } catch (error) {
+      console.error('Error checking DOG token with Solana RPC:', error);
+      return false;
+    }
+  };
+
+  // ✅ Connect Phantom Wallet
   const handleWalletConnected = async (walletAddress) => {
     connectedWallet = walletAddress;
     console.log(`Connected Wallet: ${connectedWallet}`);
@@ -93,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Auto-Detect Phantom Wallet
+  // ✅ Auto-Detect Phantom Wallet
   if (window.solana && window.solana.isPhantom) {
     window.solana.connect({ onlyIfTrusted: true })
       .then(async (resp) => {
@@ -104,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
-  // Enter the Pot
+  // ✅ Enter the Pot
   enterBtn.onclick = () => {
     if (!connectedWallet) {
       alert('Please connect your wallet first!');
@@ -122,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
-  // Draw Winner
+  // ✅ Draw Winner
   drawBtn.onclick = () => {
     fetch(api.draw, { method: 'POST' })
       .then(res => res.json())
