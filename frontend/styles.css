@@ -11,11 +11,12 @@ h1 {
   margin-bottom: 20px;
 }
 
-button {
+#connectBtn {
   padding: 10px 20px;
   margin: 10px;
   cursor: pointer;
-  background: #00ff99;
+  background: #ffcc00;
   border: none;
   border-radius: 5px;
+  font-weight: bold;
 }
