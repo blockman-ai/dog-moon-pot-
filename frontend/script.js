@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadPot();
 
-  // Check Token Holding
+  // Check if wallet holds DOG Token
   const checkDogToken = async (publicKey) => {
     try {
       const url = `https://api.mainnet-beta.solana.com`;
@@ -42,10 +42,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
       const tokens = data.result.value;
 
-      const holdsDOG = tokens.some(token =>
-        token.account.data.parsed.info.mint === DOG_TOKEN_MINT &&
-        Number(token.account.data.parsed.info.tokenAmount.uiAmount) > 0
-      );
+      const holdsDOG = tokens.some(token => {
+        const info = token.account.data.parsed.info;
+        return (
+          info.mint === DOG_TOKEN_MINT &&
+          Number(info.tokenAmount.amount) > 0 // Use raw amount, safer for decimals
+        );
+      });
 
       return holdsDOG;
     } catch (error) {
@@ -62,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         connectedWallet = resp.publicKey.toString();
         console.log(`Connected Wallet: ${connectedWallet}`);
 
-        // Hide Connect Button, show wallet info
+        // Show wallet info
         connectBtn.style.display = 'none';
         walletInfo.style.display = 'block';
         walletAddressEl.textContent = connectedWallet.slice(0, 4) + "..." + connectedWallet.slice(-4);
@@ -83,6 +86,31 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Phantom Wallet not found. Please install Phantom extension.');
     }
   };
+
+  // Auto-Detect Phantom Connection (onlyIfTrusted)
+  if (window.solana && window.solana.isPhantom) {
+    window.solana.connect({ onlyIfTrusted: true })
+      .then(async (resp) => {
+        connectedWallet = resp.publicKey.toString();
+        console.log(`Auto-connected Wallet: ${connectedWallet}`);
+
+        // Show wallet info
+        connectBtn.style.display = 'none';
+        walletInfo.style.display = 'block';
+        walletAddressEl.textContent = connectedWallet.slice(0, 4) + "..." + connectedWallet.slice(-4);
+
+        // Check if user holds $DOG
+        const eligible = await checkDogToken(connectedWallet);
+        if (eligible) {
+          enterBtn.disabled = false;
+        } else {
+          enterBtn.disabled = true;
+        }
+      })
+      .catch((err) => {
+        console.log('No trusted wallet connection found.');
+      });
+  }
 
   // Enter the Pot
   enterBtn.onclick = () => {
