@@ -20,3 +20,14 @@ h1 {
   border-radius: 5px;
   font-weight: bold;
 }
+
+#walletInfo {
+  margin: 10px;
+  font-size: 14px;
+  color: #00ff99;
+}
+
+#connectedCheck {
+  margin-left: 8px;
+  color: #00ff99;
+}
