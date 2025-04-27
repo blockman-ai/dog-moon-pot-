@@ -1,12 +1,14 @@
 const api = { pot: '/pot', entries: '/entries', enter: '/enter', draw: '/draw' };
 
 let connectedWallet = null;
-const DOG_TOKEN_MINT = "dog1viwbb2vWDpER5FrJ4YFG6gq6XuyFohUe9TXN65u"; // <-- your real mint!
+const DOG_TOKEN_MINT = "dog1viwbb2vWDpER5FrJ4YFG6gq6XuyFohUe9TXN65u"; // Your real $DOG mint!
 
 document.addEventListener('DOMContentLoaded', () => {
   const potEl = document.getElementById('pot');
   const resultEl = document.getElementById('result');
   const connectBtn = document.getElementById('connectBtn');
+  const walletInfo = document.getElementById('walletInfo');
+  const walletAddressEl = document.getElementById('walletAddress');
   const enterBtn = document.getElementById('enterBtn');
   const drawBtn = document.getElementById('drawBtn');
 
@@ -52,18 +54,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Connect Phantom
+  // Connect Phantom Wallet
   connectBtn.onclick = async () => {
     if (window.solana && window.solana.isPhantom) {
       try {
         const resp = await window.solana.connect();
         connectedWallet = resp.publicKey.toString();
-        alert(`Connected Wallet: ${connectedWallet}`);
+        console.log(`Connected Wallet: ${connectedWallet}`);
 
-        // Check if they own $DOG
+        // Hide Connect Button, show wallet info
+        connectBtn.style.display = 'none';
+        walletInfo.style.display = 'block';
+        walletAddressEl.textContent = connectedWallet.slice(0, 4) + "..." + connectedWallet.slice(-4);
+
+        // Check if user holds $DOG
         const eligible = await checkDogToken(connectedWallet);
         if (eligible) {
-          alert('You hold $DOG! You can enter the pot.');
           enterBtn.disabled = false;
         } else {
           alert('You must hold $DOG token to enter!');
