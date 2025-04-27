@@ -1,0 +1,21 @@
+body {
+  background: #0a0a0a;
+  color: #00ff99;
+  font-family: 'Inter', sans-serif;
+  text-align: center;
+  padding: 20px;
+}
+
+h1 {
+  font-family: 'Orbitron', sans-serif;
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 10px;
+  cursor: pointer;
+  background: #00ff99;
+  border: none;
+  border-radius: 5px;
+}
