@@ -2,7 +2,6 @@ const api = { pot: '/pot', entries: '/entries', enter: '/enter', draw: '/draw' }
 
 let connectedWallet = null;
 const DOG_TOKEN_MINT = "dog1viwbb2vWDpER5FrJ4YFG6gq6XuyFohUe9TXN65u"; 
-const HELIUS_API_KEY = "512281c9-ff3c-4013-9781-ebf93007fc7e"; 
 
 document.addEventListener('DOMContentLoaded', () => {
   const potEl = document.getElementById('pot');
@@ -23,22 +22,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadPot();
 
-  // Check if wallet holds DOG Token (NFT check)
+  // ✅ Check if wallet holds DOG Token using Solana RPC
   const checkDogToken = async (publicKey) => {
     try {
-      const url = `https://api.helius.xyz/v0/addresses/${publicKey}/nfts?api-key=${HELIUS_API_KEY}`;
-      const response = await fetch(url);
-      const nfts = await response.json();
+      const url = 'https://api.mainnet-beta.solana.com';
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'getTokenAccountsByOwner',
+          params: [
+            publicKey,
+            { programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' },
+            { encoding: 'jsonParsed' }
+          ]
+        })
+      });
 
-      const holdsDOG = nfts.some(nft => {
+      const data = await response.json();
+      const tokens = data.result.value;
+
+      const holdsDOG = tokens.some(token => {
+        const info = token.account.data.parsed.info;
         return (
-          nft.tokenAddress === DOG_TOKEN_MINT
+          info.mint === DOG_TOKEN_MINT &&
+          Number(info.tokenAmount.amount) > 0
         );
       });
 
       return holdsDOG;
     } catch (error) {
-      console.error('Error checking DOG token with Helius NFT API:', error);
+      console.error('Error checking DOG token with Solana RPC:', error);
       return false;
     }
   };
