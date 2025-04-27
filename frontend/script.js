@@ -59,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return false;
   }
 };
-
   
   // Connect Phantom Wallet
   const handleWalletConnected = async (walletAddress) => {
