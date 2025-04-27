@@ -9,8 +9,13 @@
 <body>
   <h1>DOG Moon Pot</h1>
 
-  <!-- Connect Wallet button -->
-  <button id="connectBtn">Connect Phantom Wallet</button>
+  <!-- Wallet Connection Section -->
+  <div id="walletSection">
+    <button id="connectBtn">Connect Phantom Wallet</button>
+    <div id="walletInfo" style="display:none;">
+      <span id="walletAddress"></span> <span id="connectedCheck">✅ Connected</span>
+    </div>
+  </div>
 
   <div id="pot">Loading...</div>
   <button id="enterBtn" disabled>Enter 10 $DOG</button>
