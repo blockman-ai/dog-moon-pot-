@@ -25,21 +25,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Check if wallet holds DOG Token
   const checkDogToken = async (publicKey) => {
-    try {
-      const url = `https://api.mainnet-beta.solana.com`;
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0',
-          id: 1,
-          method: 'getTokenAccountsByOwner',
-          params: [
-            publicKey,
-            { programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' },
-            { encoding: 'jsonParsed' }
-          ]
-        })
+  const checkDogToken = async (publicKey) => {
+  try {
+    const url = `https://api.helius.xyz/v0/addresses/${publicKey}/tokens?api-key=${HELIUS_API_KEY}`;
+    const response = await fetch(url);
+    const tokens = await response.json();
+
+    const holdsDOG = tokens.some(token => {
+      return (
+        token.mint === DOG_TOKEN_MINT &&
+        Number(token.amount) > 0
+      );
+    });
+
+    return holdsDOG;
+  } catch (error) {
+    console.error('Error checking DOG token with Helius:', error);
+    return false;
+  }
+};
+
       });
       const data = await response.json();
       const tokens = data.result.value;
