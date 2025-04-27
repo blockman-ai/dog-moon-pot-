@@ -1,8 +1,8 @@
 const api = { pot: '/pot', entries: '/entries', enter: '/enter', draw: '/draw' };
 
 let connectedWallet = null;
-const DOG_TOKEN_MINT = "dog1viwbb2vWDpER5FrJ4YFG6gq6XuyFohUe9TXN65u"; // Your real $DOG mint!
-const HELIUS_API_KEY = "512281c9-ff3c-4013-9781-ebf93007fc7e"; // Your real Helius API Key
+const DOG_TOKEN_MINT = "dog1viwbb2vWDpER5FrJ4YFG6gq6XuyFohUe9TXN65u"; 
+const HELIUS_API_KEY = "512281c9-ff3c-4013-9781-ebf93007fc7e";
 
 document.addEventListener('DOMContentLoaded', () => {
   const potEl = document.getElementById('pot');
@@ -22,28 +22,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadPot();
 
-  // ✅ Check if wallet holds DOG Token using Helius
+  // Check if wallet holds DOG Token using Helius NFT API
   const checkDogToken = async (publicKey) => {
     try {
-      const url = `https://api.helius.xyz/v0/addresses/${publicKey}/tokens?api-key=${HELIUS_API_KEY}`;
+      const url = `https://api.helius.xyz/v0/addresses/${publicKey}/nfts?api-key=${HELIUS_API_KEY}`;
       const response = await fetch(url);
-      const tokens = await response.json();
+      const nfts = await response.json();
 
-      const holdsDOG = tokens.some(token => {
+      const holdsDOG = nfts.some(nft => {
         return (
-          token.mint === DOG_TOKEN_MINT &&
-          Number(token.amount) > 0
+          nft.tokenAddress === DOG_TOKEN_MINT
         );
       });
 
       return holdsDOG;
     } catch (error) {
-      console.error('Error checking DOG token with Helius:', error);
+      console.error('Error checking DOG token with Helius NFT API:', error);
       return false;
     }
   };
 
-  // ✅ Connect Phantom Wallet
+  // Connect Phantom Wallet
   connectBtn.onclick = async () => {
     if (window.solana && window.solana.isPhantom) {
       try {
@@ -51,12 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
         connectedWallet = resp.publicKey.toString();
         console.log(`Connected Wallet: ${connectedWallet}`);
 
-        // Show connected wallet info
         connectBtn.style.display = 'none';
         walletInfo.style.display = 'block';
         walletAddressEl.textContent = connectedWallet.slice(0, 4) + "..." + connectedWallet.slice(-4);
 
-        // Check if user holds DOG
         const eligible = await checkDogToken(connectedWallet);
         if (eligible) {
           enterBtn.disabled = false;
@@ -73,19 +70,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // ✅ Auto-Detect Phantom Connection (onlyIfTrusted)
+  // Auto-Detect Phantom Connection (onlyIfTrusted)
   if (window.solana && window.solana.isPhantom) {
     window.solana.connect({ onlyIfTrusted: true })
       .then(async (resp) => {
         connectedWallet = resp.publicKey.toString();
         console.log(`Auto-connected Wallet: ${connectedWallet}`);
 
-        // Show connected wallet info
         connectBtn.style.display = 'none';
         walletInfo.style.display = 'block';
         walletAddressEl.textContent = connectedWallet.slice(0, 4) + "..." + connectedWallet.slice(-4);
 
-        // Check if user holds DOG
         const eligible = await checkDogToken(connectedWallet);
         if (eligible) {
           enterBtn.disabled = false;
@@ -98,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
-  // ✅ Enter the Pot
+  // Enter the Pot
   enterBtn.onclick = () => {
     if (!connectedWallet) {
       alert('Please connect your wallet first!');
@@ -116,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
-  // ✅ Draw Winner
+  // Draw Winner
   drawBtn.onclick = () => {
     fetch(api.draw, { method: 'POST' })
       .then(res => res.json())
