@@ -11,6 +11,14 @@ h1 {
   margin-bottom: 20px;
 }
 
+#connectedCheck {
+  margin-left: 8px;
+  font-size: 14px;
+  color: #00ff99;
+  text-shadow: 0 0 8px #00ff99;
+  font-weight: bold;
+}
+
 #connectBtn {
   padding: 10px 20px;
   margin: 10px;
